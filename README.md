@@ -25,4 +25,4 @@ Once installed, the extension will display build details for Desk in your browse
 - Modify `manifest.json` for extension configuration.
 
 ## License
-Specify your license here (e.g., MIT, Apache-2.0).
+Do what ever you want :)
