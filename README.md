@@ -1,13 +1,13 @@
-# Zoho Local Build Details Extension
+# Local Build Details Extension
 
-This project is a browser extension designed to provide build details for Zoho Desk's local environment. It consists of the following files:
+This project is a browser extension designed to provide build details for Desk's local environment. It consists of the following files:
 
 - `content.js`: Main JavaScript file containing the extension's logic.
 - `manifest.json`: Manifest file describing the extension's metadata and permissions.
 - `styles.css`: Stylesheet for the extension's UI.
 
 ## Features
-- Displays build details for Zoho Desk locally.
+- Displays build details for Desk locally.
 - Customizable UI via CSS.
 
 ## Installation
@@ -17,7 +17,7 @@ This project is a browser extension designed to provide build details for Zoho D
 4. Click "Load unpacked" and select this project folder.
 
 ## Usage
-Once installed, the extension will display build details for Zoho Desk in your browser.
+Once installed, the extension will display build details for Desk in your browser.
 
 ## Development
 - Edit `content.js` for logic changes.
