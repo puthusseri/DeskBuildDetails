@@ -101,40 +101,54 @@ function isLocalZohoUrl(urlString) {
   }
 }
 
-function buildDetailsUrlFromTab(tabUrl) {
-  const url = new URL(tabUrl);
-  return `${url.protocol}//${url.host}/support/BuildDetails.do`;
-}
+async function getBuildAndClientDetails(tabId) {
+  const [scriptResult] = await chrome.scripting.executeScript({
+    target: { tabId },
+    world: "MAIN",
+    func: async () => {
+      try {
+        const buildDetailsUrl = `${window.location.origin}/support/BuildDetails.do`;
+        const response = await fetch(buildDetailsUrl, { credentials: "include" });
 
-async function fetchBuildDetails(buildDetailsUrl) {
-  const response = await fetch(buildDetailsUrl, { credentials: "include" });
-  if (!response.ok) {
-    throw new Error(`BuildDetails request failed with status ${response.status}`);
-  }
+        if (!response.ok) {
+          return {
+            error: `BuildDetails request failed with status ${response.status}`
+          };
+        }
 
-  const text = await response.text();
-  try {
-    return JSON.parse(text);
-  } catch {
-    throw new Error("BuildDetails response is not valid JSON");
-  }
-}
+        const text = await response.text();
+        let data;
+        try {
+          data = JSON.parse(text);
+        } catch {
+          return {
+            error:
+              "BuildDetails response is not valid JSON. Ensure you are logged in on this tab."
+          };
+        }
 
-async function getAgentClientVersion(tabId) {
-  try {
-    const [result] = await chrome.scripting.executeScript({
-      target: { tabId },
-      world: "MAIN",
-      func: () => {
-        const value = globalThis.agentClientVersion;
-        if (value == null) return "NA";
-        return String(value);
+        const versionValue = globalThis.agentClientVersion;
+        const agentVersion = versionValue == null ? "NA" : String(versionValue);
+
+        return { data, agentVersion };
+      } catch (err) {
+        return {
+          error: err?.message || "Failed to load details from the active tab"
+        };
       }
-    });
-    return result?.result ?? "NA";
-  } catch {
-    return "NA";
+    }
+  });
+
+  const payload = scriptResult?.result;
+  if (!payload) {
+    throw new Error("Failed to read data from active tab");
   }
+
+  if (payload.error) {
+    throw new Error(payload.error);
+  }
+
+  return payload;
 }
 
 async function init() {
@@ -150,11 +164,7 @@ async function init() {
       return;
     }
 
-    const buildDetailsUrl = buildDetailsUrlFromTab(tab.url);
-    const [data, agentVersion] = await Promise.all([
-      fetchBuildDetails(buildDetailsUrl),
-      getAgentClientVersion(tab.id)
-    ]);
+    const { data, agentVersion } = await getBuildAndClientDetails(tab.id);
 
     const content = document.getElementById("content");
 
