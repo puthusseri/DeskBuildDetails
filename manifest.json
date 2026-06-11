@@ -3,8 +3,13 @@
   "name": "Zoho Local Build Details",
   "version": "1.6",
   "description": "Shows build details from /support/BuildDetails.do in a neat table format",
-  "permissions": ["clipboardWrite"],
+  "permissions": ["clipboardWrite", "tabs", "scripting", "activeTab"],
+  "host_permissions": ["*://*.localzoho.com/*"],
   "author" : "Vyshak Puthusseri",
+  "action": {
+    "default_title": "Zoho Build Details",
+    "default_popup": "popup.html"
+  },
   "content_scripts": [
     {
       "matches": ["*://*/support/BuildDetails.do*"],

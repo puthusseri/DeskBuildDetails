@@ -66,6 +66,34 @@ function addTableRow(table, key, value) {
   table.appendChild(tr);
 }
 
+function renderBuildCard(container, titleText, payload, options = {}) {
+  if (!payload || typeof payload !== "object") return;
+
+  const { showBranchName = true, buildLabelCopyEnabled = true } = options;
+
+  const card = document.createElement("div");
+  card.className = "card";
+
+  const title = document.createElement("h2");
+  title.innerText = titleText;
+  card.appendChild(title);
+
+  if (showBranchName) {
+    addRow(card, "BranchName", payload.BranchName ?? "NA", true);
+  }
+  addRow(card, "BuildLabel", payload.BuildLabel ?? "NA", buildLabelCopyEnabled);
+  addRow(card, "Build_Date", payload.Build_Date ?? payload.BuildDate ?? "NA");
+  addRow(
+    card,
+    "Current_Build_Url",
+    payload.Current_Build_Url ?? "NA",
+    false,
+    true
+  );
+
+  container.appendChild(card);
+}
+
 (function () {
   try {
     const data = JSON.parse(document.body.innerText);
@@ -75,21 +103,17 @@ function addTableRow(table, key, value) {
     container.className = "build-container";
 
     // --- Main Build Info card ---
-    const card = document.createElement("div");
-    card.className = "card";
+    renderBuildCard(container, "Build Details", data, {
+      showBranchName: true,
+      buildLabelCopyEnabled: false
+    });
 
-    const title = document.createElement("h2");
-    title.innerText = "Build Details";
-    card.appendChild(title);
-
-    addRow(card, "Build_Date", data.Build_Date, false);
-    addRow(card, "Current_Build_Url", data.Current_Build_Url, false, true);
-    addRow(card, "BuildLabel", data.BuildLabel, true); // copy enabled
-    addRow(card, "BuildType", data.BuildType, false);
-    addRow(card, "BranchName", data.BranchName, false);
-    addRow(card, "Module", data.Module, false);
-
-    container.appendChild(card);
+    // --- Dependency card for ZohoDeskReactApp ---
+    const reactDetails = data?.dependency?.ZohoDeskReactApp;
+    renderBuildCard(container, "ZohoDeskReactApp", reactDetails, {
+      showBranchName: false,
+      buildLabelCopyEnabled: true
+    });
 
     // --- Toggle section for more data ---
     const toggleBtn = document.createElement("button");
@@ -106,12 +130,11 @@ function addTableRow(table, key, value) {
     Object.keys(data).forEach((key) => {
       if (
         [
+          "dependency",
           "Build_Date",
           "Current_Build_Url",
           "BuildLabel",
-          "BuildType",
-          "BranchName",
-          "Module"
+          "BranchName"
         ].includes(key)
       )
         return;

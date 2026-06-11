@@ -1,0 +1,33 @@
+body {
+  margin: 0;
+  min-width: 460px;
+  max-width: 520px;
+  background: #f5f6fa;
+}
+
+.popup-container {
+  max-width: none;
+  margin: 0;
+  padding: 12px;
+}
+
+.status {
+  background: #fff;
+  border-radius: 10px;
+  padding: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  color: #334155;
+  font-size: 13px;
+}
+
+.status.error {
+  color: #b91c1c;
+}
+
+.hidden {
+  display: none;
+}
+
+.card h2 {
+  font-size: 17px;
+}
