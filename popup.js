@@ -130,7 +130,10 @@ async function getBuildAndClientDetails(tabId) {
         const versionValue = globalThis.agentClientVersion;
         const agentVersion = versionValue == null ? "NA" : String(versionValue);
 
-        return { data, agentVersion };
+        const orgIdValue = globalThis.currentOrg?.id;
+        const zgid = orgIdValue == null ? "NA" : String(orgIdValue);
+
+        return { data, agentVersion, zgid };
       } catch (err) {
         return {
           error: err?.message || "Failed to load details from the active tab"
@@ -164,7 +167,7 @@ async function init() {
       return;
     }
 
-    const { data, agentVersion } = await getBuildAndClientDetails(tab.id);
+    const { data, agentVersion, zgid } = await getBuildAndClientDetails(tab.id);
 
     const content = document.getElementById("content");
 
@@ -172,6 +175,14 @@ async function init() {
       showBranchName: true,
       buildLabelCopyEnabled: false
     });
+
+    const orgCard = document.createElement("div");
+    orgCard.className = "card";
+    const orgTitle = document.createElement("h2");
+    orgTitle.innerText = "Org Details";
+    orgCard.appendChild(orgTitle);
+    addRow(orgCard, "zgid", zgid, true);
+    content.appendChild(orgCard);
 
     const metaCard = document.createElement("div");
     metaCard.className = "card";
